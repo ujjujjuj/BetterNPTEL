@@ -11,22 +11,22 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
-const MOCK_TEST_KEY = "betternptel_mock_test_enabled"
-let quiz_answers = []
+const MOCK_TEST_KEY = "betternptel_mock_test_enabled";
+let quiz_answers = [];
 
 const mock_reset = () => {
-  mock_setShowAns(false)
+  mock_setShowAns(false);
   document.querySelectorAll(".readonly-assessment input").forEach((inp) => {
-    inp.checked = false
-    inp.disabled = false
-    inp.value = ""
-  })
-}
+    inp.checked = false;
+    inp.disabled = false;
+    inp.value = "";
+  });
+};
 
 const mock_setShowAns = (shouldShow) => {
   const feedbackElems = document.querySelectorAll(
     ".qt-feedback:not(.qt-hidden)"
-  )
+  );
   if (shouldShow) {
     const marked = Array.from(
       document.querySelectorAll(".gcb-question-row")
@@ -35,95 +35,92 @@ const mock_setShowAns = (shouldShow) => {
         row.querySelectorAll("input:checked, input[type='number']")
       ).map((inp) => {
         if (inp.type === "number") {
-          return inp.value.trim()
+          return inp.value.trim();
         } else {
           const txt = inp.parentElement
             .querySelector("label")
-            .textContent.trim()
+            .textContent.trim();
           if (txt.includes("MathJax")) {
             return inp.parentElement
               .querySelector("script[type='math/tex']")
-              .textContent.trim()
+              .textContent.trim();
           } else {
-            return txt
+            return txt;
           }
         }
       })
-    )
-    console.log(marked, quiz_answers)
+    );
 
     const answers = marked.map(
       (arr, idx) =>
         arr.length === quiz_answers[idx].length &&
         arr.every((ans, idx2) => ans === quiz_answers[idx][idx2])
-    )
+    );
 
     feedbackElems.forEach((fb, idx) => {
-      const span = document.createElement("span")
+      const span = document.createElement("span");
       if (answers[idx]) {
-        span.textContent = "Correct answer"
-        span.style.color = "green"
+        span.textContent = "Correct answer";
+        span.style.color = "green";
       } else {
         span.textContent = `Incorrect, the correct answer is: ${quiz_answers[
           idx
-        ].join(", ")}`
-        span.style.color = "red"
+        ].join(", ")}`;
+        span.style.color = "red";
       }
-      fb.insertAdjacentElement("beforeend", span)
-    })
+      fb.insertAdjacentElement("beforeend", span);
+    });
 
-    const score = answers.filter((x) => x).length
-    alert(`You scored ${score} out of ${answers.length}`)
+    const score = answers.filter((x) => x).length;
+    alert(`You scored ${score} out of ${answers.length}`);
   } else {
-    feedbackElems.forEach((fb) => (fb.innerHTML = ""))
+    feedbackElems.forEach((fb) => (fb.innerHTML = ""));
   }
-}
+};
 
 const mock_main = () => {
-  const resetBtn = document.createElement("button")
-  resetBtn.textContent = "Reset"
-  resetBtn.addEventListener("click", mock_reset)
+  const resetBtn = document.createElement("button");
+  resetBtn.textContent = "Reset";
+  resetBtn.addEventListener("click", mock_reset);
 
-  const checkBtn = document.createElement("button")
-  checkBtn.textContent = "Check answers"
-  checkBtn.style.marginLeft = "8px"
+  const checkBtn = document.createElement("button");
+  checkBtn.textContent = "Check answers";
+  checkBtn.style.marginLeft = "8px";
   checkBtn.addEventListener("click", () => {
-    mock_setShowAns(false)
-    mock_setShowAns(true)
-  })
+    mock_setShowAns(false);
+    mock_setShowAns(true);
+  });
 
-  checkBtn.classList.add("gcb-button")
-  resetBtn.classList.add("gcb-button")
+  checkBtn.classList.add("gcb-button");
+  resetBtn.classList.add("gcb-button");
 
-  const quesDivs = document.querySelectorAll(".qt-question-group")
-  const quesDiv = quesDivs[quesDivs.length - 1]
-  quesDiv.insertAdjacentElement("afterend", resetBtn)
-  resetBtn.insertAdjacentElement("afterend", checkBtn)
+  const quesDivs = document.querySelectorAll(".qt-question-group");
+  const quesDiv = quesDivs[quesDivs.length - 1];
+  quesDiv.insertAdjacentElement("afterend", resetBtn);
+  resetBtn.insertAdjacentElement("afterend", checkBtn);
 
   quiz_answers = Array.from(
     document.querySelectorAll("div.faculty-answer")
   ).map((ans) => {
     if (ans.children.length === 0) {
-      return [ans.textContent.replace(/^\(Type: Numeric\)/, "").trim()]
+      return [ans.textContent.replace(/^\(Type: Numeric\)/, "").trim()];
     } else {
       return Array.from(ans.querySelectorAll("label")).map((l) => {
-        const txt = l.textContent.trim()
+        const txt = l.textContent.trim();
         if (txt.includes("MathJax")) {
-          return l.querySelector("script[type='math/tex']").textContent.trim()
+          return l.querySelector("script[type='math/tex']").textContent.trim();
         } else {
-          return txt
+          return txt;
         }
-      })
+      });
     }
-  })
+  });
 
-  console.log(quiz_answers)
+  mock_reset();
+};
 
-  mock_reset()
-}
-
-;(function () {
-  "use strict"
+(function () {
+  "use strict";
 
   GM_addStyle(`
     body, #gcb-main-body, .gcb-aside, #video-transcript-container, .p1, .p2, .modal-header, .collapsible, .yui-wk-div {
@@ -196,15 +193,15 @@ const mock_main = () => {
       justify-content: flex-end;
       align-items: center;
     }
-  `)
+  `);
 
-  const swayamLogo = document.querySelector(".navbar-brand")
-  if (swayamLogo) swayamLogo.remove()
+  const swayamLogo = document.querySelector(".navbar-brand");
+  if (swayamLogo) swayamLogo.remove();
 
   const newItemImage = document.querySelector(
     'img[src="https://storage.googleapis.com/swayam2-node/assets/gif/recommendation.gif"]'
-  )
-  if (newItemImage) newItemImage.remove()
+  );
+  if (newItemImage) newItemImage.remove();
 
   if (
     new URLSearchParams(window.location.search).has("assessment") &&
@@ -212,30 +209,30 @@ const mock_main = () => {
       (elem) => !elem.textContent.includes("(Non Graded)")
     )
   ) {
-    const insertPoint = document.querySelector(".top-navigation")
+    const insertPoint = document.querySelector(".top-navigation");
     if (insertPoint) {
-      const isActivated = !!sessionStorage.getItem(MOCK_TEST_KEY)
+      const isActivated = !!sessionStorage.getItem(MOCK_TEST_KEY);
 
-      const btn = document.createElement("button")
-      btn.id = "betternptel-toggle"
-      btn.textContent = `Mock test mode: ${isActivated ? "ON" : "OFF"}`
+      const btn = document.createElement("button");
+      btn.id = "betternptel-toggle";
+      btn.textContent = `Mock test mode: ${isActivated ? "ON" : "OFF"}`;
       if (isActivated) {
-        btn.classList.add("on")
+        btn.classList.add("on");
       }
       btn.addEventListener("click", () => {
         if (isActivated) {
-          sessionStorage.removeItem(MOCK_TEST_KEY)
+          sessionStorage.removeItem(MOCK_TEST_KEY);
         } else {
-          sessionStorage.setItem(MOCK_TEST_KEY, "1")
+          sessionStorage.setItem(MOCK_TEST_KEY, "1");
         }
-        window.location.reload()
-      })
+        window.location.reload();
+      });
 
-      insertPoint.insertAdjacentElement("afterbegin", btn)
+      insertPoint.insertAdjacentElement("afterbegin", btn);
 
       if (isActivated) {
-        mock_main()
+        mock_main();
       }
     }
   }
-})()
+})();
