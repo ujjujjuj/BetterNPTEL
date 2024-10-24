@@ -2,6 +2,8 @@
 
 BetterNPTEL enhances the NPTEL website by adding dark mode and mock assignment tests.
 
+![Preview image](https://github.com/ujjujjuj/BetterNPTEL/blob/master/img/preview.png?raw=true)
+
 ## Installation
 
 1. **Install a userscript manager** like:
