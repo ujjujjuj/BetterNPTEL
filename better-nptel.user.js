@@ -12,6 +12,7 @@
 // ==/UserScript==
 
 const MOCK_TEST_KEY = "betternptel_mock_test_enabled";
+const DARK_MODE_KEY = "betternptel_dark_mode_enabled";
 let quiz_answers = [];
 
 const mock_reset = () => {
@@ -50,6 +51,7 @@ const mock_setShowAns = (shouldShow) => {
         }
       })
     );
+    console.log(marked, quiz_answers);
 
     const answers = marked.map(
       (arr, idx) =>
@@ -116,84 +118,13 @@ const mock_main = () => {
     }
   });
 
+  console.log(quiz_answers);
+
   mock_reset();
 };
 
 (function () {
   "use strict";
-
-  GM_addStyle(`
-    body, #gcb-main-body, .gcb-aside, #video-transcript-container, .p1, .p2, .modal-header, .collapsible, .yui-wk-div {
-      background-color: #121212 !important;
-      color: #fbfbfa !important;
-    }
-    .gcb-col-12, .subunit_current, .subunit_other, .modal-body, .collapsible {
-      background-color: #1b1816 !important;
-    }
-    .gcb-aside {
-      border: 1px solid #fff2;
-    }
-    a {
-      color: #fbfbfa !important;
-    }
-    #gcb-nav-left li {
-      border-bottom: 1px solid #fff2;
-    }
-    .unit_heading {
-      border-top: 1px solid #fff3;
-    }
-    .unit_heading:hover, .subunit_current:hover, .subunit_other:hover {
-      background-color: #1b1816 !important;
-      filter: brightness(150%);
-    }
-    #video-transcript-container {
-      border: 1px solid #fff3;
-    }
-    #gcb-nav-x {
-      background-color: #1b1816 !important;
-      border-top: 1px solid #fff3;
-      border-bottom: 1px solid #fff3;
-    }
-    code {
-      background-color: #121212 !important;
-      color: indianred !important;
-    }
-    .correct, .faculty-answer {
-      color: #20C55F !important;
-    }
-    .dropdown-menu {
-      background-color: #121212 !important;
-    }
-    .profileName {
-      color: white !important;
-    }
-    a[target="_blank"] {
-      color: lightblue !important;
-    }
-
-    #betternptel-toggle {
-      font-size: 14px;
-      outline: none;
-      border: none;
-      border-radius: 4px;
-      background-color: indianred;
-      color: white;
-      margin-right: 12px;
-      padding: 2px 8px;
-      font-weight: 600;
-    }
-    #betternptel-toggle.on {
-      background-color: #20C55F;
-    }
-    #betternptel-toggle:hover {
-      filter: brightness(120%);
-    }
-    .top-navigation {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-    }
-  `);
 
   const swayamLogo = document.querySelector(".navbar-brand");
   if (swayamLogo) swayamLogo.remove();
@@ -203,18 +134,18 @@ const mock_main = () => {
   );
   if (newItemImage) newItemImage.remove();
 
+  const insertPoint = document.querySelector(".top-navigation");
   if (
     new URLSearchParams(window.location.search).has("assessment") &&
     Array.from(document.querySelectorAll("h1")).every(
       (elem) => !elem.textContent.includes("(Non Graded)")
     )
   ) {
-    const insertPoint = document.querySelector(".top-navigation");
     if (insertPoint) {
       const isActivated = !!sessionStorage.getItem(MOCK_TEST_KEY);
 
       const btn = document.createElement("button");
-      btn.id = "betternptel-toggle";
+      btn.classList.add("betternptel-mock-toggle");
       btn.textContent = `Mock test mode: ${isActivated ? "ON" : "OFF"}`;
       if (isActivated) {
         btn.classList.add("on");
@@ -235,4 +166,104 @@ const mock_main = () => {
       }
     }
   }
+
+  const isDarkMode = !localStorage.getItem(DARK_MODE_KEY);
+  const darkModeBtn = document.createElement("button");
+  darkModeBtn.classList.add("betternptel-darkmode-toggle");
+  darkModeBtn.textContent = `Dark Mode ${isDarkMode ? "ON" : "OFF"}`;
+  if (isDarkMode) {
+    darkModeBtn.classList.add("on");
+  }
+  darkModeBtn.addEventListener("click", () => {
+    if (isDarkMode) {
+      localStorage.setItem(DARK_MODE_KEY, "0");
+    } else {
+      localStorage.removeItem(DARK_MODE_KEY);
+    }
+    window.location.reload();
+  });
+
+  insertPoint.insertAdjacentElement("afterbegin", darkModeBtn);
+
+  if (isDarkMode) {
+    GM_addStyle(`
+      body, #gcb-main-body, .gcb-aside, #video-transcript-container, .p1, .p2, .modal-header, .collapsible, .yui-wk-div {
+        background-color: #121212 !important;
+        color: #fbfbfa !important;
+      }
+      .gcb-col-12, .subunit_current, .subunit_other, .modal-body, .collapsible {
+        background-color: #1b1816 !important;
+      }
+      .gcb-aside {
+        border: 1px solid #fff2;
+      }
+      a {
+        color: #fbfbfa !important;
+      }
+      #gcb-nav-left li {
+        border-bottom: 1px solid #fff2;
+      }
+      .unit_heading {
+        border-top: 1px solid #fff3;
+      }
+      .unit_heading:hover, .subunit_current:hover, .subunit_other:hover {
+        background-color: #1b1816 !important;
+        filter: brightness(150%);
+      }
+      #video-transcript-container {
+        border: 1px solid #fff3;
+      }
+      #gcb-nav-x {
+        background-color: #1b1816 !important;
+        border-top: 1px solid #fff3;
+        border-bottom: 1px solid #fff3;
+      }
+      code {
+        background-color: #121212 !important;
+        color: indianred !important;
+      }
+      .correct, .faculty-answer {
+        color: #20C55F !important;
+      }
+      .dropdown-menu {
+        background-color: #121212 !important;
+      }
+      .profileName {
+        color: white !important;
+      }
+      a[target="_blank"] {
+        color: lightblue !important;
+      }
+      .gcb-pull-right span {
+        color: #fbfbfa !important;
+      }
+    `);
+  }
+  GM_addStyle(`
+    .betternptel-mock-toggle, .betternptel-darkmode-toggle {
+      font-size: 14px;
+      outline: none;
+      border: none;
+      border-radius: 4px;
+      background-color: indianred;
+      color: white;
+      margin-right: 12px;
+      padding: 2px 8px;
+      font-weight: 600;
+    }
+    .betternptel-mock-toggle.on {
+      background-color: #20C55F;
+    }
+    .betternptel-mock-toggle:hover, .betternptel-darkmode-toggle:hover {
+      filter: brightness(120%);
+    }
+    .betternptel-darkmode-toggle {
+      background-color: #1b1816;
+    }
+    .top-navigation {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+  `);
 })();

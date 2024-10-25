@@ -6,11 +6,6 @@ BetterNPTEL enhances the NPTEL website by adding dark mode and mock assignment t
 
 ## Installation
 
-1. **Install a userscript manager** like:
+1. **Install a userscript manager (IMPORTANT)** like [Violentmonkey](https://violentmonkey.github.io/)
 
-   - [Violentmonkey](https://violentmonkey.github.io/)
-   - [Tampermonkey](https://www.tampermonkey.net/)
-   - [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/)
-
-2. **Install BetterNPTEL**: Click the link below to install the script:
-   - [BetterNPTEL Script](https://github.com/ujjujjuj/BetterNPTEL/raw/refs/heads/master/better-nptel.user.js)
+2. **Install BetterNPTEL** by clicking on this link - [BetterNPTEL Script](https://github.com/ujjujjuj/BetterNPTEL/raw/refs/heads/master/better-nptel.user.js)
